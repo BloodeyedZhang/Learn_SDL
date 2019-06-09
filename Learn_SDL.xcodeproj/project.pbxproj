@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		B012308822AD3330002A91B4 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B012308722AD3330002A91B4 /* main.cpp */; };
 		B012309022AD33BA002A91B4 /* libSDL2-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B012308F22AD33BA002A91B4 /* libSDL2-2.0.0.dylib */; };
+		B012309422AD5A27002A91B4 /* libSDL2_image-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B012309322AD5A27002A91B4 /* libSDL2_image-2.0.0.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -27,6 +28,8 @@
 		B012308422AD3330002A91B4 /* Learn_SDL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Learn_SDL; sourceTree = BUILT_PRODUCTS_DIR; };
 		B012308722AD3330002A91B4 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		B012308F22AD33BA002A91B4 /* libSDL2-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libSDL2-2.0.0.dylib"; path = "../../../../../usr/local/Cellar/sdl2/2.0.9_1/lib/libSDL2-2.0.0.dylib"; sourceTree = "<group>"; };
+		B012309222AD57C1002A91B4 /* hello.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hello.png; sourceTree = "<group>"; };
+		B012309322AD5A27002A91B4 /* libSDL2_image-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libSDL2_image-2.0.0.dylib"; path = "../../../../../usr/local/Cellar/sdl2_image/2.0.4/lib/libSDL2_image-2.0.0.dylib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -34,6 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B012309422AD5A27002A91B4 /* libSDL2_image-2.0.0.dylib in Frameworks */,
 				B012309022AD33BA002A91B4 /* libSDL2-2.0.0.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -44,6 +48,7 @@
 		B012307B22AD3330002A91B4 = {
 			isa = PBXGroup;
 			children = (
+				B012309122AD57C1002A91B4 /* Resources */,
 				B012308622AD3330002A91B4 /* Learn_SDL */,
 				B012308522AD3330002A91B4 /* Products */,
 				B012308E22AD33BA002A91B4 /* Frameworks */,
@@ -69,10 +74,19 @@
 		B012308E22AD33BA002A91B4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B012309322AD5A27002A91B4 /* libSDL2_image-2.0.0.dylib */,
 				B012308F22AD33BA002A91B4 /* libSDL2-2.0.0.dylib */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
+		};
+		B012309122AD57C1002A91B4 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B012309222AD57C1002A91B4 /* hello.png */,
+			);
+			path = Resources;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -258,6 +272,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/sdl2/2.0.9_1/lib,
+					/usr/local/Cellar/sdl2_image/2.0.4/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -273,6 +288,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/sdl2/2.0.9_1/lib,
+					/usr/local/Cellar/sdl2_image/2.0.4/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
