@@ -13,6 +13,50 @@
 #include <SDL2/SDL_image.h>
 
 int main(int argc, const char * argv[]) {
+    // 初始化
+    if (SDL_Init(SDL_INIT_EVERYTHING) == -1) {
+        std::cout << SDL_GetError() << std::endl;
+        return 1;
+    }
+    // 创建窗口
+    SDL_Window* mWindow = nullptr;
+    mWindow = SDL_CreateWindow("hello world", 100, 100, 640, 640, SDL_WINDOW_SHOWN);
+    if (mWindow == nullptr) {
+        std::cout << SDL_GetError() << std::endl;
+        return 1;
+    }
+    // 创建渲染器
+    SDL_Renderer* mRender = nullptr;
+    mRender = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (mRender == nullptr) {
+        std::cout << SDL_GetError() << std::endl;
+        return 1;
+    }
+    // 加载bmp格式图片
+    SDL_Surface* mSurface = nullptr;
+    mSurface = SDL_LoadBMP("/Users/zhangjiajun/work/MyLearning/Learn_SDL/Resources/hello.bmp");
+    if (mSurface == nullptr) {
+        std::cout << SDL_GetError() << std::endl;
+        return 1;
+    }
+    SDL_Texture* mTexture = nullptr;
+    mTexture = SDL_CreateTextureFromSurface(mRender, mSurface);
+    SDL_FreeSurface(mSurface); //释放surface
+    // 绘制图像
+    SDL_RenderClear(mRender);  //清空渲染器
+    SDL_RenderCopy(mRender, mTexture, NULL, NULL); //画图像
+    SDL_RenderPresent(mRender); //更新屏幕
+    // 延迟2000毫秒
+    SDL_Delay(2000);
+    // 释放内存
+    SDL_DestroyTexture(mTexture);
+    SDL_DestroyRenderer(mRender);
+    SDL_DestroyWindow(mWindow);
+    
+    SDL_Quit();
+    
+    
+    /*
     bool quit = false;
     SDL_Event event;
     // 声明表面
@@ -67,5 +111,6 @@ int main(int argc, const char * argv[]) {
     IMG_Quit();
     
     SDL_Quit();
+     */
     return 0;
 }
