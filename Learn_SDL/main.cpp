@@ -19,7 +19,7 @@ const int SCREEN_HEIGHT = 480;
 SDL_Window* mWindow = nullptr;
 SDL_Renderer* mRenderer = nullptr;
 
-SDL_Texture* LoadImage(std::string filename, SDL_Renderer* mRenderer) {
+SDL_Texture* LoadImage(std::string filename, SDL_Renderer *mRenderer) {
     SDL_Texture* mTexture = nullptr;
     mTexture = IMG_LoadTexture(mRenderer, filename.c_str());
     if (mTexture == nullptr)
@@ -27,13 +27,18 @@ SDL_Texture* LoadImage(std::string filename, SDL_Renderer* mRenderer) {
     return mTexture;
 }
 
-void ApplySurface(int x, int y, SDL_Texture* mTexture, SDL_Renderer* mRenderer) {
+void ApplySurface(int x, int y, SDL_Texture *mTexture, SDL_Renderer *mRenderer, SDL_Rect *clip = NULL) {
     SDL_Rect pos;
     pos.x = x;
     pos.y = y;
-    SDL_QueryTexture(mTexture, NULL, NULL, &pos.w, &pos.h);
-    
-    SDL_RenderCopy(mRenderer, mTexture, NULL, &pos);
+    //Detect if we should use clip width settings or texture width
+    if (clip != NULL) {
+        pos.w = clip->w;
+        pos.h = clip->h;
+    }
+    else
+        SDL_QueryTexture(mTexture, NULL, NULL, &pos.w, &pos.h);
+    SDL_RenderCopy(mRenderer, mTexture, clip, &pos);
 }
 
 int main(int argc, const char * argv[]) {
@@ -61,7 +66,7 @@ int main(int argc, const char * argv[]) {
     
     // 加载bmp格式图片
     SDL_Texture *mBackground = nullptr, *mSmile = nullptr;
-    std::string resRoot = "/Users/zhangjiajun/work/MyLearning/Learn_SDL/Resources/lesson4/";
+    std::string resRoot = "/Users/zhangjiajun/work/MyLearning/Learn_SDL/Resources/lesson5/";
     try {
 //        mBackground = LoadImage((resRoot + "background.png").c_str(), mRenderer);
         mSmile = LoadImage((resRoot + "image.png").c_str(), mRenderer);
@@ -70,34 +75,53 @@ int main(int argc, const char * argv[]) {
         std::cout << e.what() << std::endl;
         return 4;
     }
-    int bw, bh, iw, ih, colCnt = 2, rowCnt = 2;
-    SDL_QueryTexture(mBackground, NULL, NULL, &bw, &bh);
-    SDL_QueryTexture(mSmile, NULL, NULL, &iw, &ih);
-    
-    int speed = 1;
+    int iW = 100, iH = 100, column = 0;
+    SDL_Rect clips[4];
+    for (int i = 0; i < 4; i++) {
+        if (i != 0 && i % 2 == 0)
+            column++;
+        clips[i].x = column * iW;
+        clips[i].y = (i % 2) * iH;
+        clips[i].w = iW;
+        clips[i].h = iH;
+    }
+    int useClip = 0;
+    // 绘制图像
+    SDL_RenderClear(mRenderer);  //清空渲染器
     while (!quit) {
         SDL_WaitEvent(&event);
 
-        switch (event.type) {
-                // 用户从菜单要求退出程序
-            case SDL_QUIT:
-                quit = true;
-                break;
+        if (event.type == SDL_KEYDOWN) {
+            switch (event.key.keysym.sym) {
+                    // 用户从菜单要求退出程序
+    //            case SDL_QUIT:
+    //                quit = true;
+    //                break;
+                case SDLK_1:
+                    useClip = 0;
+                    break;
+                case SDLK_2:
+                    useClip = 1;
+                    break;
+                case SDLK_3:
+                    useClip = 2;
+                    break;
+                case SDLK_4:
+                    useClip = 3;
+                    break;
+                case SDLK_ESCAPE:
+                    quit = true;
+                    break;
 
-            default:
-                break;
+                default:
+                    break;
+            }
+            // 绘制图像
+            SDL_RenderClear(mRenderer);  //清空渲染器
+            // 把贴图材质复制到渲染器上
+            ApplySurface(clips[useClip].x, clips[useClip].y, mSmile, mRenderer, &clips[useClip]);
         }
-        // 绘制图像
-        SDL_RenderClear(mRenderer);  //清空渲染器
-        // 把贴图材质复制到渲染器上
-        // 绘制背景
-//        for (int i = 0; i < colCnt; i++) {
-//            for (int j = 0; j < rowCnt; j++) {
-//                ApplySurface(bw*i, bh*j, mBackground, mRenderer);
-//            }
-//        }
-        // 绘制前景
-        ApplySurface(SCREEN_WIDTH/2 - iw/2 + speed++, SCREEN_HEIGHT/2 - ih/2, mSmile, mRenderer);
+
         
         // 显示出来
         SDL_RenderPresent(mRenderer);
