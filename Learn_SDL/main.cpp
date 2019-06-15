@@ -12,47 +12,109 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
+const int SCREEN_WIDTH = 640;
+const int SCREEN_HEIGHT = 480;
+
+SDL_Window* mWindow = nullptr;
+SDL_Renderer* mRenderer = nullptr;
+
+SDL_Texture* LoadImage(std::string filename, SDL_Renderer* mRenderer) {
+    SDL_Surface* mImage = nullptr;
+    SDL_Texture* mTexture = nullptr;
+    
+    mImage = IMG_Load(filename.c_str());
+    if (mImage == nullptr) {
+        std::cout << SDL_GetError() << std::endl;
+    }
+    else {
+        mTexture = SDL_CreateTextureFromSurface(mRenderer, mImage);
+        SDL_FreeSurface(mImage);
+    }
+    
+    return mTexture;
+}
+
+void ApplySurface(int x, int y, SDL_Texture* mTexture, SDL_Renderer* mRenderer) {
+    SDL_Rect pos;
+    pos.x = x;
+    pos.y = y;
+    SDL_QueryTexture(mTexture, NULL, NULL, &pos.w, &pos.h);
+    
+    SDL_RenderCopy(mRenderer, mTexture, NULL, &pos);
+}
+
 int main(int argc, const char * argv[]) {
+    bool quit = false;
+    SDL_Event event;
     // 初始化
     if (SDL_Init(SDL_INIT_EVERYTHING) == -1) {
         std::cout << SDL_GetError() << std::endl;
         return 1;
     }
+    // 额外使用了图片库,需要单独初始化
+    IMG_Init(IMG_INIT_JPG);
     // 创建窗口
-    SDL_Window* mWindow = nullptr;
-    mWindow = SDL_CreateWindow("hello world", 100, 100, 640, 640, SDL_WINDOW_SHOWN);
+    mWindow = SDL_CreateWindow("lesson 2", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (mWindow == nullptr) {
         std::cout << SDL_GetError() << std::endl;
-        return 1;
+        return 2;
     }
     // 创建渲染器
-    SDL_Renderer* mRender = nullptr;
-    mRender = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (mRender == nullptr) {
+    mRenderer = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (mRenderer == nullptr) {
         std::cout << SDL_GetError() << std::endl;
-        return 1;
+        return 3;
     }
+    
     // 加载bmp格式图片
-    SDL_Surface* mSurface = nullptr;
-    mSurface = SDL_LoadBMP("/Users/zhangjiajun/work/MyLearning/Learn_SDL/Resources/hello.bmp");
-    if (mSurface == nullptr) {
+    SDL_Texture *mBackground = nullptr, *mSmile = nullptr;
+    std::string resRoot = "/Users/zhangjiajun/work/MyLearning/Learn_SDL/Resources/";
+    mBackground = LoadImage((resRoot + "lesson2/background.bmp").c_str(), mRenderer);
+    mSmile = LoadImage((resRoot + "lesson2/smile.bmp").c_str(), mRenderer);
+    if (mBackground == nullptr || mSmile == nullptr) {
         std::cout << SDL_GetError() << std::endl;
-        return 1;
+        return 4;
     }
-    SDL_Texture* mTexture = nullptr;
-    mTexture = SDL_CreateTextureFromSurface(mRender, mSurface);
-    SDL_FreeSurface(mSurface); //释放surface
     // 绘制图像
-    SDL_RenderClear(mRender);  //清空渲染器
-    SDL_RenderCopy(mRender, mTexture, NULL, NULL); //画图像
-    SDL_RenderPresent(mRender); //更新屏幕
-    // 延迟2000毫秒
-    SDL_Delay(2000);
+    SDL_RenderClear(mRenderer);  //清空渲染器
+    int bw, bh, iw, ih, colCnt = 2, rowCnt = 2;
+    SDL_QueryTexture(mBackground, NULL, NULL, &bw, &bh);
+    SDL_QueryTexture(mSmile, NULL, NULL, &iw, &ih);
+    while (!quit) {
+        SDL_WaitEvent(&event);
+
+        switch (event.type) {
+                // 用户从菜单要求退出程序
+            case SDL_QUIT:
+                quit = true;
+                break;
+
+            default:
+                break;
+        }
+        // 把贴图材质复制到渲染器上
+        // 绘制背景
+        for (int i = 0; i < colCnt; i++) {
+            for (int j = 0; j < rowCnt; j++) {
+                ApplySurface(bw*i, bh*j, mBackground, mRenderer);
+            }
+        }
+        // 绘制前景
+        ApplySurface(SCREEN_WIDTH/2 - iw/2, SCREEN_HEIGHT/2 - ih/2, mSmile, mRenderer);
+        
+        // 显示出来
+        SDL_RenderPresent(mRenderer);
+    }
+    
+    
     // 释放内存
-    SDL_DestroyTexture(mTexture);
-    SDL_DestroyRenderer(mRender);
+    SDL_DestroyTexture(mBackground);
+    SDL_DestroyTexture(mSmile);
+    SDL_DestroyRenderer(mRenderer);
     SDL_DestroyWindow(mWindow);
     
+    
+    IMG_Quit();
     SDL_Quit();
     
     
@@ -111,6 +173,6 @@ int main(int argc, const char * argv[]) {
     IMG_Quit();
     
     SDL_Quit();
-     */
+    */
     return 0;
 }
