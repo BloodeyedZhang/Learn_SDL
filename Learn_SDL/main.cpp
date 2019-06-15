@@ -9,6 +9,7 @@
 #include <iostream>
 #include <math.h>
 #include <string>
+#include <stdexcept>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
@@ -19,18 +20,10 @@ SDL_Window* mWindow = nullptr;
 SDL_Renderer* mRenderer = nullptr;
 
 SDL_Texture* LoadImage(std::string filename, SDL_Renderer* mRenderer) {
-    SDL_Surface* mImage = nullptr;
     SDL_Texture* mTexture = nullptr;
-    
-    mImage = IMG_Load(filename.c_str());
-    if (mImage == nullptr) {
-        std::cout << SDL_GetError() << std::endl;
-    }
-    else {
-        mTexture = SDL_CreateTextureFromSurface(mRenderer, mImage);
-        SDL_FreeSurface(mImage);
-    }
-    
+    mTexture = IMG_LoadTexture(mRenderer, filename.c_str());
+    if (mTexture == nullptr)
+        throw std::runtime_error("Fail to load image: " + filename + SDL_GetError());
     return mTexture;
 }
 
@@ -68,11 +61,13 @@ int main(int argc, const char * argv[]) {
     
     // 加载bmp格式图片
     SDL_Texture *mBackground = nullptr, *mSmile = nullptr;
-    std::string resRoot = "/Users/zhangjiajun/work/MyLearning/Learn_SDL/Resources/";
-    mBackground = LoadImage((resRoot + "lesson2/background.bmp").c_str(), mRenderer);
-    mSmile = LoadImage((resRoot + "lesson2/smile.bmp").c_str(), mRenderer);
-    if (mBackground == nullptr || mSmile == nullptr) {
-        std::cout << SDL_GetError() << std::endl;
+    std::string resRoot = "/Users/zhangjiajun/work/MyLearning/Learn_SDL/Resources/lesson3/";
+    try {
+        mBackground = LoadImage((resRoot + "background.png").c_str(), mRenderer);
+        mSmile = LoadImage((resRoot + "image.png").c_str(), mRenderer);
+    }
+    catch (const std::runtime_error &e) {
+        std::cout << e.what() << std::endl;
         return 4;
     }
     // 绘制图像
